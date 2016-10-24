@@ -2,6 +2,6 @@
   "name": "my-prog-npm",
   "dependencies": {
     "colors": "*",
-    "sounds": "*"
+    "play-sound": "*"
   }
 }

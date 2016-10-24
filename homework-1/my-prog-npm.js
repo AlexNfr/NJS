@@ -3,11 +3,22 @@
  */
 
 require('colors');
-require('sounds');
+player = require('play-sound')(opt = {});
 
-var soundManager=new Sounds('./',function() {
-    console.log('Hello,'.yellow + ' World!'.blue);
-    soundManager.play('beep',3);
+console.log('Hello,'.yellow + ' World!'.blue);
+
+console.log('It\'s beep # 6'.white);
+player.play('beep-06.mp3', function(err){
+    if (err) throw err
 });
-soundManager.register('Beep.ogg');
+
+console.log('It\'s beep # 7'.grey);
+player.play('beep-07.mp3', function(err){
+    if (err) throw err
+});
+
+console.log('It\'s beep # 8b'.green);
+player.play('beep-08b.mp3', function(err){
+    if (err) throw err
+});
 
