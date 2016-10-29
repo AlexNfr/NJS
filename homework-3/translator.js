@@ -7,50 +7,46 @@ var http = require('http'),
     request = require('request');
 var PORT = 3200;
 
-function translate(word) {
-    var YANDEX_KEY = 'trnsl.1.1.20161028T132106Z.31c161e395527497.8fc1ff3a44d508aae5b493e6fb7b839936925480';
-    var requestToYandex = 'https://translate.yandex.net/api/v1.5/tr.json/translate '
-        + '?key=' + YANDEX_KEY + '&text=' + word + '&lang=en-ru';
+function onRequest(req, response) {
+    var incomingRequest,
+        translatorTitle = 'Online Translate Service ver. 0.1 (c) 2016 by AlexNfr\n\n',
+        helpMessage = '  Usage: localhost:3200[/<word1>[/<word2>...[/<word2>]...]]'
+    var wordsEn, wordsRu,
+        YANDEX_KEY = 'trnsl.1.1.20161028T132106Z.31c161e395527497.8fc1ff3a44d508aae5b493e6fb7b839936925480',
+        requestToYandex;
 
-    request(requestToYandex, function (error, res, body) {
-        console.log(error, body);
-        if (!error && res.statusCode == 200) {
-            translate = (JSON.parse(body).text);
-        }
-    });
-    // http
-    //     .get(requestToYandex, function(res) {
-    //         console.log('response: ', res.statusCode);
-    //         console.log('http headers: ', res.headers);
-    //
-    //         // По событию, обрабатываем получаемые данные
-    //         res.on('data', function(chunk) {
-    //             console.log('BODY: ', chunk.toString());
-    //         });
-    //
-    //         // Отлавливаем конец данных
-    //         res.on('end', function() {
-    //             console.log('No more data in response.');
-    //         });
-    //     })
-    //     .on('error', function(error) {
-    //         throw error;
-    //     });
-}
+    response.writeHead(200, {'Content-Type': 'text/plain; charset=utf8'});
+    response.write(translatorTitle);
 
-function onRequest(req, res) {
-    var incoming, wordEn, wordRu;
+    incomingRequest = url.parse(req.url);
+    // console.log(incomingRequest);
 
-    incoming = url.parse(req.url);
-    wordEn = incoming.query;
-    console.log(wordEn);
+    if (incomingRequest.path == '/')
+    {
+        response.write(helpMessage);
+        response.end();
+    }
+    else
+    {
+        wordsEn = incomingRequest.path.split('/');
+        console.log('En: ', wordsEn.slice(-1));
 
-    wordRu = translate(wordEn);
-    console.log(wordRu);
+        requestToYandex = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
+            + '?key=' + YANDEX_KEY + wordsEn.join('&text=') + '&lang=en-ru';
 
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write(wordRu);
-    res.end();
+        request(requestToYandex, function (error, res, body) {
+            if (!error && res.statusCode == 200) {
+                wordsRu = JSON.parse(body).text;
+                if (wordsRu.length) {
+                    console.log('Ru:', wordsRu);
+                    wordsRu.forEach(function (wordRu, i, arr) {
+                        response.write(wordsEn[i + 1] + ' (en) => ' + wordRu + ' (ru)\n');
+                    });
+                }
+                response.end();
+            }
+        });
+    }
 }
 
 http.createServer(onRequest).listen(PORT);
