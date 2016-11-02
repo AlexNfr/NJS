@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+<p>
+  {{message}}
+</p>
+<form name="news-filter" action="/news" method="post">
+  <fieldset>
+    <legend>Фильтр новостей</legend>
+    <select name="news-category">
+      <option value="last" {{filter.last}}>Последние</option>
+      <option value="fresh" {{filter.fresh}}>Свежие</option>
+      <option value="old" {{filter.old}}>Архивные</option>
+      <option value="all" {{filter.all}}>Все</option>
+    </select>
+    <field>новости, по </field>
+    <select name="news-size">
+      <option value="s10" {{filter.s10}}>10</option>
+      <option value="s20" {{filter.s20}}>20</option>
+      <option value="s50" {{filter.s50}}>50</option>
+    </select>
+    <field>на странице, </field>
+    <button type="submit">Показать!</button>
+  </fieldset>
+</form>
+<div>
+  <h2>{{newsTitle}}</h2>
+  <p>
+    {{newsList}}
+  </p>
+</div>
